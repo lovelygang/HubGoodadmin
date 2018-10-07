@@ -1,0 +1,175 @@
+{% extends 'index.html' %}
+
+{% block body %}
+<div class="container">
+
+    <div class="panel panel-info">
+        <div class="panel-heading">
+             <h3 class="panel-title">学员在线注册资料表</h3>
+        </div>
+
+            <div class="panel-body">
+            <form action="" method="post" onsubmit="return BeforeFormSubmit(this)">
+            {% csrf_token %}
+                {% for field in customer_form %}
+                  <div class="form-group col-lg-6">
+                    <label class="col-sm-2  control-label">{{ field.label }}</label>
+                    <div class="col-sm-10">
+                      {{ field }}
+                       <span style="color: red;">{{ field.errors.0 }}</span>
+                    </div>
+                  </div>
+                {% endfor %}
+               <div class="form-group col-lg-6">
+                    <label class="col-sm-2  control-label">报名班级</label>
+                    <div class="col-sm-10">
+                        <p style="color: red;font-weight: 600;font-size: 16px"> {{ enrollment_obj.class_grade }}</p>
+                    </div>
+               </div>
+
+            <div class="form-group col-lg-6">
+                    <label class="col-sm-2  control-label">学费</label>
+                    <div class="col-sm-10">
+                     <p style="color: red;font-weight: 600;font-size: 16px">{{ enrollment_obj.class_grade.course.price }} </p>
+                    </div>
+                  </div>
+
+                <pre style="height: 350px;">{{ enrollment_obj.class_grade.contract_template.content }}</pre>
+                <div class="col-lg-offset-4" >
+                    <input   type="checkbox" name="contract_agreed">我已经认证阅读，同意该条件
+                </div>
+                <hr>
+                <input type="submit" class="btn btn-info col-lg-offset-5"  value="提交">
+            </form>
+                <hr>
+
+                <p>已上传文件列表</p>
+
+                     <ul id="uploaded_files">
+
+                        {% for file in uploaded_files %}
+
+                             <li><span> {{ file }} </span> <a id="delete_file" style="color: red;margin-left: 50px" >删除</a> </li>
+
+                        {% endfor %}
+                    </ul>
+
+
+
+
+             <p>请上传身份照正反面照片</p>
+        <form action="{% url "enrollment_file_upload" enrollment_obj.id %}" id="myAwesomeDropzone" method="post"  class="dropzone" >{% csrf_token %}
+            <div class="dz-default dz-message">
+                <div>
+                    <p class="dz-text">把证件信息拖放到这里</p>
+                    <p class="text-muted">最多可上传2张照片</p>
+                </div>
+            </div>
+{#            <input name="file" type="file" multiple />#}
+        </form>
+
+{#             <form id="myAwesomeDropzone"  action="" class="dropzone">#}
+{#              <div class="fallback">#}
+{#                <input name="file" type="file" multiple />#}
+{#              </div>#}
+{#            </form>#}
+
+            </div>
+
+
+
+        <div class="panel-footer">
+            ......
+        </div>
+    </div>
+</div>
+    <script src="/static/js/jquery.min.js"></script>
+    <script>
+
+        $(document).ready(function(){
+            delete_file_evenet();
+        });
+
+
+        function delete_file_evenet() {
+             // 删除文件
+           // console.log($('.file_delete'));
+            $("#uploaded_files").on('click',"#delete_file",function () {
+
+                var file_name = $(this).prev().html();
+                console.log(file_name)
+                $.ajax({
+                    url:"{% url 'enrollment_file_delete' enrollment_obj.id %}",
+                    type:'POST',
+                    data:{'file_name':file_name},
+                    dataType:'JSON',
+                    success:function (arg) {
+                        console.log(arg);
+                        if(arg=='ok'){
+                            window.location.reload()
+                        }
+                    }
+                })
+            })
+        }
+
+        function BeforeFormSubmit(ele){
+            $(":disabled").removeAttr("disabled");
+
+            if($("#uploaded_files").children().length<2){
+                alert("请上传身份证正反面");
+                return false
+            }
+
+            if (!$("input[name='contract_agreed']").prop("checked")){
+            alert("必须勾选不退费协议!");
+            return false
+        }
+        }
+
+
+
+    </script>
+{% endblock %}
+
+{% block extra-js %}
+    <script src="/static/plugins/dropzone/dropzone.js"></script>
+    <script>
+           Dropzone.options.myAwesomeDropzone  = {
+              paramName: "file", // The name that will be used to transfer the file
+              maxFilesize: 2, // MB
+              maxFiles:2,
+              parallelUploads:1,
+              accept: function(file, done) {
+               console.log("upload");
+               done();
+              },
+           };
+
+
+           $(function() {
+              // "myAwesomeDropzone" is the camelized version of the HTML element's ID
+
+          // Now that the DOM is fully loaded, create the dropzone, and setup the
+          // event listeners
+          // Prevent Dropzone from auto discovering this element:
+          Dropzone.options.myAwesomeDropzone  = false;
+          Dropzone.autoDiscover = false;
+
+          var myDropzone = new Dropzone("#myAwesomeDropzone ");
+          myDropzone.on("success", function(file,response) {
+            /* Maybe display some more file information on your page */
+             console.log("completet", file, response);
+             {#window.location.reload();#}
+             var response = JSON.parse(response);
+             if (!response.status){
+                 alert(response.err_msg);
+                 myDropzone.removeFile(file); //不符合的删除
+             }else {
+                 $("#uploaded_files").append("<li><span>"+ file.name+"</span><a id='delete_file' style='color: red;margin-left: 50px'>删除</a></li>")
+             }
+
+          });
+        })
+    </script>
+{% endblock %}

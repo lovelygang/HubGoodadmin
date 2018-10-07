@@ -1,0 +1,31 @@
+{% extends 'goodadmin/index.html' %}
+{% load goodadmin_tags %}
+
+{% block right-content %}
+
+ <div>
+    {% for app_name,app_tables in site.enabled_admins.items %}
+
+    <table class="table table-bordered">
+         <thead>
+         <tr>
+             <th><a href="/goodadmin/{{ app_name }}">{{ app_name }}</a></th>
+             <th>增加</th>
+             <th>修改</th>
+         </tr>
+         </thead>
+    <tbody>
+        {% for model_name in app_tables %}
+            <tr>
+                <td><a href="{% url 'table_obj_list' app_name model_name%}">{% get_ver_ch app_name model_name %}</a></td>
+                <td><a href="/goodadmin/{{ app_name }}/{{ model_name }}/add">Add</a></td>
+                <td><a href="/goodadmin/{{ app_name }}/{{ model_name }}">change</a></td>
+            </tr>
+            {% endfor %}
+    </tbody>
+    </table>
+
+    {% endfor %}
+ </div>
+
+{% endblock %}

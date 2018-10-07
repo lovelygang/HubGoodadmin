@@ -1,0 +1,18 @@
+{% extends 'goodadmin/index.html' %}
+{% load goodadmin_tags %}
+
+{% block right-content %}
+        <ol class="breadcrumb">
+          <li><a href="/goodadmin/">Home</a></li>
+          <li><a href="/goodadmin/{{ app_name }}">{{ app_name }}</a></li>
+          <li><a href="/goodadmin/{{ app_name }}/{{ model_name }}">{% get_model_verbose_name admin_class %}</a></li>
+          <li class="active">Add-{% get_model_verbose_name admin_class %}</li>
+      </ol>
+
+<h2 class="page-header">添加{% get_model_name admin_class %}-数据</h2>
+
+
+    {% include 'goodadmin/table_compontent.html' %}
+
+
+{% endblock %}

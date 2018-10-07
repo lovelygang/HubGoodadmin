@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% block login-css %}
+    <link href="/static/css/signin.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+
+    <div class="container">
+
+      <form class="form-signin" method="post">
+          {% csrf_token %}
+        <h2 class="form-signin-heading">GOODADMIN</h2>
+        <label for="inputEmail" class="sr-only">用户名</label>
+        <input type="text" name="username" class="form-control" placeholder="用户名" required autofocus>
+        <label for="inputPassword" class="sr-only">密码</label>
+        <input type="password" name="password" class="form-control" placeholder="密码" required="">
+
+          <span style="color: red">{{ error_message }}</span>
+          <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">登入</button>
+      </form>
+
+    </div> <!-- /container -->
+
+ {% endblock %}
+
+

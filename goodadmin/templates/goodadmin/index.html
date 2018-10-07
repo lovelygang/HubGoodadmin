@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+ <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">{% block pro_name %}Project name{% endblock %}</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+
+            <li>
+               <li class="dropdown ">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" >欢迎：{{ request.user.name }} <span class="caret"></span></a>
+                     <ul class="dropdown-menu">
+                        <li><a href="#">个人信息</a></li>
+                        <li><a href="{% url 'logout' %}">注销</a></li>
+
+                     </ul>
+        </li>
+          </ul>
+
+        </div>
+      </div>
+    </nav>
+
+ <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+
+          <ul class="nav nav-sidebar">
+{#          o2o 反向查 直接 request.user.userprofile 反向查询后面跟小写的表名#}
+{#          fk  反向查 直接 request.user.userprofile_set 反向查询后面跟小写的表名 + _set #}
+{#            {{ request.user.userprofile.role.all  }} ，和下面的是一样的  #}
+{#            {{ request.user.userprofile.role.select_related.distinct }}#}
+
+
+
+                 {% for menu in menus_list %}
+
+                     {% if request.path == menu.url_name %}
+                          <li  class="active"><a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name %}{% endif %}">{{ menu.name}}</a></li>
+                     {% else %}
+                         <li  ><a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name %}{% endif %}">{{ menu.name}}</a></li>
+                     {% endif %}
+                 {% endfor %}
+
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          {% block right-content %}
+            <h2 class="page-header">Dashboard</h2>
+          {% endblock %}
+
+        </div>
+      </div>
+    </div>
+{% endblock %}

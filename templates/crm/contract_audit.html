@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block right-content %}
+    <h3>合同审查</h3>
+
+
+
+     <form class="form-horizontal " method="post" onsubmit="BeforeFormSubmit(this)">{% csrf_token %}
+        {{ customer_form }}
+
+        {% for field in enrollment_form %}
+            {{ field }}
+        {% endfor %}
+         <a href="/crm/stu_enrollment" onclick="Audit_fail(this)" class="btn btn-danger pull-right" style="margin-left: 5px">不通过</a>
+        <input type="submit" class="btn btn-success pull-right"  value="审核通过" >
+
+
+    </form>
+
+
+    <script>
+    function BeforeFormSubmit(ele) {
+        $(":disabled").removeAttr("disabled");
+    }
+
+    function Audit_fail(ele) {
+        var enrollment_id = {{ enrollment_id }}
+        $.ajax({
+            url:"{% url 'audit_fail'  %}",
+            type:'POST',
+            data:{'enrollment_id': enrollment_id},
+            dataType:'JSON',
+            success:function (arg) {
+
+            }
+        })
+    }
+
+</script>
+
+{% endblock %}
